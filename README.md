@@ -34,7 +34,7 @@ Ensure you have the following installed on your local machine (or WSL2):
 Clone the repository and create a file for your local secrets (it is already protected by `.gitignore`):
 
 ```bash
-git clone [https://github.com/CptLeoxo/datacenter-in-a-box.git](https://github.com/CptLeoxo/datacenter-in-a-box.git)
+git clone https://github.com/CptLeoxo/datacenter-in-a-box.git
 cd datacenter-in-a-box/terraform
 touch secrets.auto.tfvars
 ```
