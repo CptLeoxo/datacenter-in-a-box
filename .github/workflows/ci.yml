@@ -20,10 +20,10 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Initialization
-        uses: terraform init
+        run: terraform init
 
       - name: Check syntax
-        uses: terraform validate
+        run: terraform validate
 
 
   docker-test:
