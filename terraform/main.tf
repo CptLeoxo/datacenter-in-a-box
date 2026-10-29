@@ -33,6 +33,15 @@ resource "docker_container" "flask_app" {
     internal = 5000
     external = 5000
   }
+
+  env = [
+    "DB_HOST=postgres_db",
+    "DB_USER=${var.db_user}",
+    "DB_PASSWORD=${var.db_password}",
+    "DB_NAME=datacenter"
+
+  ]
+
 }
 
 resource "docker_image" "nginx_image" {
@@ -59,3 +68,33 @@ resource "docker_container" "nginx" {
 
   }
 }
+
+resource "docker_volume" "postgres_data" {
+  name = "pg_data"
+}
+
+resource "docker_image" "postgres_image" {
+  name = "postgres:15-alpine"
+}
+
+resource "docker_container" "postgres" {
+  name  = "postgres_db"
+  image = docker_image.postgres_image.name
+
+  networks_advanced {
+    name = docker_network.datacenter_net.name
+  }
+
+  env = [
+    "POSTGRES_USER=${var.db_user}",
+    "POSTGRES_PASSWORD=${var.db_password}",
+    "POSTGRES_DB=datacenter"
+  ]
+
+  volumes {
+    volume_name    = docker_volume.postgres_data.name
+    container_path = "/var/lib/postgresql/data"
+  }
+
+}
+

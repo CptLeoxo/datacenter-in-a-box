@@ -1,4 +1,7 @@
+import os
+import psycopg2
 from flask import Flask, jsonify
+
 
 app = Flask(__name__)
 
@@ -17,6 +20,33 @@ def home():
 @app.route('/health')
 def health_check():
     return jsonify({"status": "healthy"}), 200
+
+
+@app.route('/db-check')
+def db_check():
+    try:
+        conn = psycopg2.connect(
+            host=os.environ.get("DB_HOST", "localhost"),
+            user=os.environ.get("DB_USER", "admin"),
+            password=os.environ.get("DB_PASSWORD", "secretpassword"),
+            dbname=os.environ.get("DB_NAME", "datacenter")
+        )
+
+        cur = conn.cursor()
+        cur.execute("SELECT version();")
+        db_version = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+
+        return jsonify({
+            "status": "database connected!",
+            "postgres_version": db_version[0]
+        }), 200
+
+    except Exception as e:
+        return jsonify({"status": "connection failed", "error": str(e)}), 500
 
 
 if __name__ == "__main__":
