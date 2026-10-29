@@ -1,0 +1,38 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  terraform-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform
+    steps:
+      - name: Downloading code from repo
+        uses: actions/checkout@v4
+
+      - name: Installing Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Initialization
+        uses: terraform init
+
+      - name: Check syntax
+        uses: terraform validate
+
+
+  docker-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download code from repo
+        uses: actions/checkout@v4
+
+      - name: Docker-image + pytest
+        run: |
+         cd app
+         docker build -t datacenter-flask:ci-test . 
